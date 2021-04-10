@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-func NewTimeBasedRotator(pattern string, period time.Duration) (*TimeBasedRotator, error) {
+func NewLogScissors(pattern string, period time.Duration) (*LogScissors, error) {
 	strfobj, err := strftime.New(pattern)
 	if err != nil {
 		return nil, errors.Wrap(err, `invalid time duration pattern`)
 	}
 
-	var tw TimeBasedRotator
+	var tw LogScissors
 	tw.pattern = strfobj
 	tw.period = period.Nanoseconds()
 	_, offset := time.Now().Zone()
@@ -21,13 +21,13 @@ func NewTimeBasedRotator(pattern string, period time.Duration) (*TimeBasedRotato
 	return &tw, nil
 }
 
-func NewTimeBasedRotatorWithPreFilename(pattern string, period time.Duration, preFilename string) (*TimeBasedRotator, error) {
+func NewLogScissorsWithPreFilename(pattern string, period time.Duration, preFilename string) (*LogScissors, error) {
 	strfobj, err := strftime.New(pattern)
 	if err != nil {
 		return nil, errors.Wrap(err, `invalid time duration pattern`)
 	}
 
-	var tw TimeBasedRotator
+	var tw LogScissors
 	tw.pattern = strfobj
 	tw.period = period.Nanoseconds()
 	_, offset := time.Now().Zone()
@@ -37,8 +37,8 @@ func NewTimeBasedRotatorWithPreFilename(pattern string, period time.Duration, pr
 	return &tw, nil
 }
 
-func NewTimeBasedCleaner(pattern string, maxAge time.Duration) (*TimeBasedCleaner, error) {
-	var tc TimeBasedCleaner
+func NewLogCleaner(pattern string, maxAge time.Duration) (*LogCleaner, error) {
+	var tc LogCleaner
 	tc.pattern = pattern
 	if maxAge < 0 {
 		return nil, errors.New(`maxAge must be greater than 0`)

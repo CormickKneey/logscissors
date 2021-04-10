@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type TimeBasedRotator struct {
+type LogScissors struct {
 	timeDiffToUTC int64
 	lastTime      int64
 	period        int64
@@ -23,7 +23,7 @@ type TimeBasedRotator struct {
 	preFilename   string
 }
 
-func (tw *TimeBasedRotator) Write(p []byte) (n int, err error) {
+func (tw *LogScissors) Write(p []byte) (n int, err error) {
 	tw.mutex.Lock()
 	defer tw.mutex.Unlock()
 
@@ -39,14 +39,14 @@ func (tw *TimeBasedRotator) Write(p []byte) (n int, err error) {
 	return fh.Write(p)
 }
 
-func (tw *TimeBasedRotator) getHandler() (io.Writer, error) {
+func (tw *LogScissors) getHandler() (io.Writer, error) {
 	if tw.preFilename == "" {
 		return tw.handler()
 	}
 	return tw.handlerWithPreFilename()
 }
 
-func (tw *TimeBasedRotator) handler() (io.Writer, error) {
+func (tw *LogScissors) handler() (io.Writer, error) {
 	isOvertime, current := tw.isOvertime()
 	if !isOvertime {
 		return tw.outFile, nil
@@ -76,7 +76,7 @@ func (tw *TimeBasedRotator) handler() (io.Writer, error) {
 	return fh, nil
 }
 
-func (tw *TimeBasedRotator) handlerWithPreFilename() (io.Writer, error) {
+func (tw *LogScissors) handlerWithPreFilename() (io.Writer, error) {
 	isOvertime, current := tw.isOvertime()
 	if !isOvertime {
 		return tw.outFile, nil
@@ -111,7 +111,7 @@ func (tw *TimeBasedRotator) handlerWithPreFilename() (io.Writer, error) {
 	return fl, nil
 }
 
-func (tw *TimeBasedRotator) Close() error {
+func (tw *LogScissors) Close() error {
 	tw.mutex.Lock()
 	defer tw.mutex.Unlock()
 
@@ -125,13 +125,13 @@ func (tw *TimeBasedRotator) Close() error {
 	return nil
 }
 
-func (tw *TimeBasedRotator) isOvertime() (bool, int64) {
+func (tw *LogScissors) isOvertime() (bool, int64) {
 	nowUnixNano := time.Now().UnixNano()
 	current := nowUnixNano - ((nowUnixNano + tw.timeDiffToUTC) % tw.period)
 	return (current - tw.lastTime) >= tw.period, current
 }
 
-func (tw *TimeBasedRotator) lastPeriod() int64 {
+func (tw *LogScissors) lastPeriod() int64 {
 	lastUnixNano := time.Now().Add(-time.Duration(tw.period)).UnixNano()
 	return lastUnixNano - ((lastUnixNano + tw.timeDiffToUTC) % tw.period)
 }

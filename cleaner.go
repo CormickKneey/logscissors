@@ -3,17 +3,17 @@ package logrotator
 import (
 	"os"
 	"path/filepath"
-	"time"
 	"sync"
+	"time"
 )
 
-type TimeBasedCleaner struct {
+type LogCleaner struct {
 	pattern string
 	maxAge  time.Duration
 	mutex   sync.RWMutex
 }
 
-func (cleaner *TimeBasedCleaner) Clean() ([]string, error) {
+func (cleaner *LogCleaner) Clean() ([]string, error) {
 	cleaner.mutex.Lock()
 	defer cleaner.mutex.Unlock()
 
